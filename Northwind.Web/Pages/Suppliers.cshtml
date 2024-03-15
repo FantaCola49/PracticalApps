@@ -1,8 +1,7 @@
 ﻿@page
 @using Packt.Shared
 @model Northwind.Web.Pages.SuppliersModel
-@{
-}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <div class="row">
     <h1 class="display-2">Поставщики</h1>
@@ -15,9 +14,9 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model.Suppliers is not null)
+            @if (Model._suppliers is not null)
             {
-                @foreach(Supplier s in Model.Suppliers)
+                @foreach(Supplier s in Model._suppliers)
                 {
                     <tr>
                         <td>@s.CompanyName</td>
@@ -28,4 +27,19 @@
             }
         </tbody>
     </table>
+</div>
+<div class="row">
+    <p>Введите данные для добавления нового поставщика:</p>
+    <form method="POST">
+        <div>
+            <input asp-for="_supplier.CompanyName" placeholder="Название компании" />
+        </div>
+        <div>
+            <input asp-for="_supplier.Country" placeholder="Страна компании" />
+        </div>
+        <div>
+            <input asp-for="_supplier.Phone" placeholder="Телефон" />
+        </div>
+        <input type="submit" />
+    </form>
 </div>
