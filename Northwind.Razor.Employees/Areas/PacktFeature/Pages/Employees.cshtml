@@ -1,0 +1,16 @@
+﻿@page
+@using Packt.Shared
+@model PacktFeature.Pages.EmployeesPageModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<div class="row">
+    <h1 class="display-2">Сотрудники</h1>
+</div>
+<div class="row">
+    @foreach(Employee emp in Model.Employees)
+    {
+        <div class="col-sm-3"> 
+            <partial name="_Employee" model="emp" />
+        </div>
+    }
+</div>
