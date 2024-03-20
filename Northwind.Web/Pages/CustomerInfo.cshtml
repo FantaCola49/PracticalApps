@@ -1,0 +1,60 @@
+﻿@page
+@using Packt.Shared
+@model Northwind.Web.Pages.CustomerInfoModel
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Portlet card -->
+            <div class="card mb-md-1 mb-3">
+                <div class="card-body">
+
+                    <h4 class="card-title mb-0">Наш клиент: @Model.customer.ContactName</h4>
+
+                </div>
+            </div> <!-- end card-->
+        </div><!-- end col -->
+
+        <div class="col-md-4">
+            <!-- Portlet card -->
+            <div class="card bg-primary text-white mb-md-0 mb-3">
+                <div class="card-body">
+
+                    <h5 class="card-title mb-0">Личная информация</h5>
+
+                    <div id="cardCollpase2" class="collapse pt-3 show">
+                        <h5>Место работы: @Model.customer.CompanyName</h5>
+                        <h5>Должность: @Model.customer.ContactTitle</h5>
+                        <h5>Город: @Model.customer.City</h5>
+                    </div>
+                </div>
+            </div> <!-- end card-->
+        </div><!-- end col -->
+
+        <div class="col-md-4">
+            <!-- Portlet card -->
+            <div class="card bg-primary text-white mb-md-0 mb-3">
+                <div class="card-body">
+
+                    <h5 class="card-title mb-0">Контактная информация</h5>
+
+                    <div id="cardCollpase2" class="collapse pt-3 show">
+                        <h5>Место работы: @Model.customer.CompanyName</h5>
+                        <h5>Должность: @Model.customer.ContactTitle</h5>
+                        <h5>Город: @Model.customer.City</h5>
+                    </div>
+                </div>
+            </div> <!-- end card-->
+        </div><!-- end col -->
+    </div>
+    <!-- end row -->
+
+    <div class="jumbotron">
+        <h1 class="display-3">Информация о заказах</h1>
+        <p class="lead">Тут будут заказы, братик</p>
+        <hr/>
+    </div>
+</div>
+
+

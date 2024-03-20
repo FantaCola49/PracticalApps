@@ -28,7 +28,7 @@ namespace Northwind.Web.Pages
 
         public void OnGet()
         {
-            ViewData["Title"] = "Northwind B2B - Suppliers";
+            ViewData["Title"] = "Northwind Клиенты";
             // Список поставщиков
             _suppliers = _db.Suppliers.OrderBy(c => c.SupplierId).ThenBy(c => c.CompanyName);
         }
@@ -36,11 +36,8 @@ namespace Northwind.Web.Pages
         {
             if ((_supplier is not null) && ModelState.IsValid)
             {
-                Console.WriteLine("Провалились в метод OnPost от SuppliersModel!");
                 _db.Suppliers.Add(_supplier);
-                Console.WriteLine("Добавили поставщика");
                 _db.SaveChanges();
-                Console.WriteLine("Сохранили!");
                 return RedirectToAction("/suppliers");
             }
             else

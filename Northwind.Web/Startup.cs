@@ -1,4 +1,5 @@
 ﻿using Packt.Shared; // метод расширения AddNorthwindContext
+using static System.Console;
 
 namespace Northwind.Web;
 
@@ -22,9 +23,31 @@ public class Startup
     {
         if (!env.IsDevelopment())
         {
+            // включает промежуточное ПО для использования Hyper Strict-Transport-Security
             app.UseHsts();
         }
         app.UseRouting(); // начало маршрутизации конечной точки
+        app.Use(async(HttpContext context, Func <Task> next)  => 
+        {
+            RouteEndpoint? Rep = context.GetEndpoint() as RouteEndpoint;
+            if (Rep is not null)
+            {
+                WriteLine($"Endpoint name:{Rep.DisplayName}");
+                WriteLine($"Endpoint route pattern: {Rep.RoutePattern.RawText}");
+            }
+
+            if (context.Request.Path == "/bonjour")
+            {
+                // в случае совпадения URL-пути становится возвращаемым делегатом, поэтому следующий делегат не вызывается
+                await context.Response.WriteAsync("Bonjour Monde!");
+                return;
+            }
+
+            // можно заменить запрос перед вызовом следующего делегата
+            await next();
+            // можно изменить ответ после вызова следующего делегата
+        });
+        // Перенаправление запросов на https
         app.UseHttpsRedirection();
         app.UseDefaultFiles();
         app.UseStaticFiles();
