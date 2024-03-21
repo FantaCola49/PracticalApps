@@ -8,10 +8,11 @@
         <div class="col-md-4">
             <!-- Portlet card -->
             <div class="card mb-md-1 mb-3">
+                <div class="card-header">
+                    <h5 class="card-title">Наш клиент:</h5>
+                </div>
                 <div class="card-body">
-
-                    <h4 class="card-title mb-0">Наш клиент: @Model.customer.ContactName</h4>
-
+                    <h4 class="lead"> @Model.customer.ContactName</h4>
                 </div>
             </div> <!-- end card-->
         </div><!-- end col -->
@@ -19,10 +20,10 @@
         <div class="col-md-4">
             <!-- Portlet card -->
             <div class="card bg-primary text-white mb-md-0 mb-3">
-                <div class="card-body">
-
+                <div class="card-header">
                     <h5 class="card-title mb-0">Личная информация</h5>
-
+                </div>
+                <div class="card-body">
                     <div id="cardCollpase2" class="collapse pt-3 show">
                         <h5>Место работы: @Model.customer.CompanyName</h5>
                         <h5>Должность: @Model.customer.ContactTitle</h5>
@@ -34,15 +35,17 @@
 
         <div class="col-md-4">
             <!-- Portlet card -->
-            <div class="card bg-primary text-white mb-md-0 mb-3">
-                <div class="card-body">
-
+            <div class="card bg-success text-white mb-md-0 mb-3">
+                <div class="card-header">
                     <h5 class="card-title mb-0">Контактная информация</h5>
-
+                </div>
+                <div class="card-body">
                     <div id="cardCollpase2" class="collapse pt-3 show">
-                        <h5>Место работы: @Model.customer.CompanyName</h5>
-                        <h5>Должность: @Model.customer.ContactTitle</h5>
-                        <h5>Город: @Model.customer.City</h5>
+                        <h5>Телефон: @Model.customer.Phone</h5>
+                        @if (Model.customer.Fax is not null)
+                        {
+                            <h5>Факс: @Model.customer.Fax</h5>
+                        }
                     </div>
                 </div>
             </div> <!-- end card-->
@@ -52,8 +55,42 @@
 
     <div class="jumbotron">
         <h1 class="display-3">Информация о заказах</h1>
-        <p class="lead">Тут будут заказы, братик</p>
         <hr/>
+        <p></p>
+        <table class="table">
+            <thead class="thead-inverse">
+                <tr>
+                    <th>Дата заказа</th>
+                    <th>Дата отгрузки</th>
+                    <th>Дата доставки</th>
+                    <th>Доставлено компанией</th>
+                    <th>Вес товара</th>
+                    <th>Название корабля</th>
+                    <th>Страна доставки</th>
+                    <th>Город</th>
+                    <th>Точный адрес</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model._orders is not null)
+                {
+                    @foreach (Order o in Model._orders)
+                    {
+                        <tr>
+                            <td>@o.OrderDate</td>
+                            <td>@o.RequiredDate</td>
+                            <td>@o.ShippedDate</td>
+                            <td>@Model.GetShipperById(o.ShipVia).CompanyName</td>
+                            <td>@o.Freight</td>
+                            <td>@o.ShipName</td>
+                            <td>@o.ShipCountry</td>
+                            <td>@o.ShipCity</td>
+                            <td>@o.ShipAddress</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
