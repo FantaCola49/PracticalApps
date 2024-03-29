@@ -10,13 +10,20 @@ public partial class Supplier
 {
     [Key]
     public int SupplierId { get; set; }
-
+    /// <summary>
+    /// Название компании
+    /// </summary>
     [StringLength(40)]
     public string CompanyName { get; set; } = null!;
-
+    /// <summary>
+    /// Имя представителя компании
+    /// </summary>
     [StringLength(30)]
     public string? ContactName { get; set; }
 
+    /// <summary>
+    /// Должность представителя компании
+    /// </summary>
     [StringLength(30)]
     public string? ContactTitle { get; set; }
 

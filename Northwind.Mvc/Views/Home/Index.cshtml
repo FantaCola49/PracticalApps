@@ -49,8 +49,12 @@
                         <h2>@Model.Categories[c].CategoryName</h2>
                         <h3>@Model.Categories[c].Description</h3>
                         <p>
-                            <a class="btn btn-primary"
-                               href="/home/categorydetail/@Model.Categories[c].CategoryId">View</a>
+                            @* Обычный стиль представления *@
+                            @* <a class="btn btn-primary" href="/home/CategoryDetail/@Model.Categories[c].CategoryId"> Посмотреть</a> *@
+                            @* Кайфовый *@
+                            <a asp-action="CategoryDetail" asp-controller="home" asp-route-categoryId="@Model.Categories[c].CategoryId" class="btn btn-info">
+                                Посмотреть
+                            </a>
                         </p>
                     </div>
                 </div>
@@ -75,6 +79,11 @@
         <p class="lead">
             У нас было @Model?.VisitorCount посетителей в этом месяце.
         </p>
+        <h3>Запрос продуктов по цене</h3>
+        <form asp-action="ProductsThatCostsMoreThan" asp-controller="Home" method="get">
+            <input name="price" placeholder="Продукты дороже чем..." />
+            <input type="submit" />
+        </form>
         @if (Model is not null)
         {
             <h2>Продукты</h2>

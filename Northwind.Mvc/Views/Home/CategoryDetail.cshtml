@@ -1,0 +1,47 @@
+﻿@using Packt.Shared
+@model IEnumerable<Product>
+@{
+    string Title = $"Сведения о категории {ViewData["CategoryName"]}";
+    int? categoryId = Model.Select(p => p.CategoryId).FirstOrDefault();
+    string categoryName = Model.Select(p => p.Category.CategoryName).FirstOrDefault();
+    ViewData["Title"] = Title;
+}
+
+@if(Model is null ||
+    categoryId is null ||
+    string.IsNullOrEmpty(categoryName))
+{
+    <div>Указанная категория не найдена</div>
+}
+else
+{
+    <div class="container">
+        <img class="d-block w-100" src="~/images/category@(categoryId).jpeg" alt="@categoryName" />
+    </div>
+
+    <h2>@Title</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название продукта</th>
+                <th>Компания-поставщик</th>
+                <th>Адрес компании-поставщика</th>
+                <th>Цена за единицу</th>
+                <th>На складе</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var p in Model)
+            {
+                <tr>
+                    <th>@p.ProductName</th>
+                    <th>@p.Supplier.ContactName</th>
+                    <th>@p.Supplier.Address</th>
+                    <th>@p.UnitPrice</th>
+                    <th>@p.UnitsInStock</th>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

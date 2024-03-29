@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
-using Northwind.Mvc.Models;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Northwind.Mvc.Models;
 using Packt.Shared; // NortwindContext
+using System.Diagnostics;
 
 namespace Northwind.Mvc.Controllers
 {
@@ -18,13 +19,13 @@ namespace Northwind.Mvc.Controllers
         }
 
         [ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any)]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             HomeIndexViewModel model = new HomeIndexViewModel
             (
             VisitorCount: new Random().Next(1, 1001),
-            Categories: _db.Categories.ToList(),
-            Products: _db.Products.ToList()
+            Categories: await _db.Categories.ToListAsync(),
+            Products: await _db.Products.ToListAsync()
             );
             return View(model); // передача модели представлени€
         }
@@ -49,13 +50,13 @@ namespace Northwind.Mvc.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult ProductDetail(int? id)
+        public async Task<IActionResult> ProductDetail(int? id)
         {
             if (!id.HasValue)
             {
                 return BadRequest("¬ы должны указать id продукта при обращении к странице");
             }
-            Product? model = _db.Products.SingleOrDefault(p => p.ProductId == id);
+            Product? model = await _db.Products.SingleOrDefaultAsync(p => p.ProductId == id);
             if (model == null)
             {
                 return NotFound($"ProductId {id} не найден");
@@ -77,5 +78,37 @@ namespace Northwind.Mvc.Controllers
                 ModelState.Values.SelectMany(state => state.Errors).Select(error => error.ErrorMessage));
             return View(model);
         }
+
+        public async Task<IActionResult> ProductsThatCostsMoreThan(decimal? price)
+        {
+            if (!price.HasValue)
+                return BadRequest("¬ы должны указать цену продукта в запросе на сервер!");
+
+            IEnumerable<Product> model = await _db.Products.Include(p => p.Category)
+                                                     .Include(p => p.Supplier)
+                                                     .Where(p => p.UnitPrice > price)
+                                                     .ToListAsync();
+            if (!model.Any())
+                return NotFound($"¬ Ѕƒ не найдено продуктов с ценой ниже {price}");
+            ViewData["MaxPrice"] = price.Value.ToString("C"); // установим валюту локального региона
+            return View(model);
+        }
+
+        public async Task<IActionResult> CategoryDetail(int? categoryId)
+        {
+            if (!categoryId.HasValue)
+                return BadRequest($"¬ы должны указать Id категори, пришедший Id = {categoryId}");
+
+            IEnumerable<Product> model = await _db.Products.Include(p => p.Category)
+                                                     .Include(p => p.Supplier)
+                                                     .Where(p => p.CategoryId
+                                                     .Equals(categoryId))
+                                                     .ToListAsync();
+
+            if (!model.Any()) return NotFound("¬ базе данных нет сведений по данной категории");
+            ViewData["CategoryName"] = model.Select(p => p.Category.CategoryName).FirstOrDefault();
+            return View(model);
+        }
+
     }
 }

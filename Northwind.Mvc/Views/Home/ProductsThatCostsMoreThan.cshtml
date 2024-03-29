@@ -1,0 +1,38 @@
+﻿@using Packt.Shared;
+@model IEnumerable<Product>
+@{
+    string Title = $"Продукты, которые стоят больше чем {ViewData["MaxPrice"]}";
+    ViewData["Title"] = Title;
+}
+
+<h2>@Title</h2>
+@if (Model is null)
+{
+    <div>Не найдено продуктов</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название категории</th>
+                <th>Название компании поставщика</th>
+                <th>Название продукта</th>
+                <th>Цена за единицу</th>
+                <th>В наличии</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Product p in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(item => p.Category.CategoryName)</td>
+                    <td>@Html.DisplayFor(item => p.Supplier.CompanyName)</td>
+                    <td>@Html.DisplayFor(item => p.ProductName)</td>
+                    <td>@Html.DisplayFor(item => p.UnitPrice)</td>
+                    <td>@Html.DisplayFor(item => p.UnitsInStock)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
