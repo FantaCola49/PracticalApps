@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Xml.Serialization;
 
 namespace Packt.Shared;
 
@@ -31,9 +32,11 @@ public partial class Customer
 
     public string? Fax { get; set; }
 
+    [XmlIgnore]
     [InverseProperty("Customer")]
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
+    [XmlIgnore]
     [ForeignKey("CustomerId")]
     [InverseProperty("Customers")]
     public virtual ICollection<CustomerDemographic> CustomerTypes { get; set; } = new List<CustomerDemographic>();

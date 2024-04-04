@@ -1,13 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Packt.Shared;
-using System.Collections.Concurrent;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking; // EntityEntry<T>
+using Packt.Shared; // Customer
+using System.Collections.Concurrent; // ConcurrentDictionary
 
 namespace Nothwind.WebApi.Repositories;
 
 public class CustomerRepository : ICustomerRepository
 {
     // статические потокобезопасное поле словаря для кэширования клиентов
-    private static ConcurrentDictionary<string, Customer?> customerCache;
+    private static ConcurrentDictionary<string, Customer>? customersCache;
     // используем поле контекст данных экземпляра, поскольку оно не должно кешироваться из-за внутреннего кеширования
     private NorthwindContext db;
 
@@ -15,9 +15,10 @@ public class CustomerRepository : ICustomerRepository
     {
         db = injectedContext;
         // при инициализации программы создаём многопоточный словарь для экономии памяти
-        if (customerCache is null)
+        if (customersCache is null)
         {
-            customerCache = new ConcurrentDictionary<string, Customer?>(db.Customers.ToDictionary(c => c.CustomerId));
+            customersCache = new ConcurrentDictionary<string, Customer>(
+              db.Customers.ToDictionary(c => c.CustomerId));
         }
     }
 
@@ -35,11 +36,11 @@ public class CustomerRepository : ICustomerRepository
         int affected = await db.SaveChangesAsync();
         if (affected == 1)
         {
-            if (customerCache is null)
+            if (customersCache is null)
             {
                 return c;
             }
-            return customerCache.AddOrUpdate(c.CustomerId, c, UpdateCache);
+            return customersCache.AddOrUpdate(c.CustomerId, c, UpdateCache);
         }
         return null;
     }
@@ -63,11 +64,11 @@ public class CustomerRepository : ICustomerRepository
         if (affected != 1) return false;
 
         //удаляем из кеша
-        if (customerCache is not null)
+        if (customersCache is not null)
         {
-            if (customerCache.TryGetValue(id, out Customer cust))
+            if (customersCache.TryGetValue(id, out Customer cust))
             {
-                return customerCache.TryRemove(id, out cust);
+                return customersCache.TryRemove(id, out cust);
             }
         }
         return null!;
@@ -80,8 +81,8 @@ public class CustomerRepository : ICustomerRepository
     public Task<IEnumerable<Customer>> RetrieveAllAsync()
     {
         // в целях экономии времени, используем кеш
-        return Task.FromResult(customerCache is null ? Enumerable.Empty<Customer>() // если пусто
-                                                       : customerCache.Values);     // если чё-то есть
+        return Task.FromResult(customersCache is null ? Enumerable.Empty<Customer>() // если пусто
+                                                       : customersCache.Values);     // если чё-то есть
     }
 
     /// <summary>
@@ -93,8 +94,8 @@ public class CustomerRepository : ICustomerRepository
     {
         // в целях производительности извлекаем из кеша
         id = id.ToUpper();
-        if (customerCache is null) return null!;
-        customerCache.TryGetValue(id, out Customer? cust);
+        if (customersCache is null) return null!;
+        customersCache.TryGetValue(id, out Customer? cust);
         return Task.FromResult(cust);
     }
 
@@ -128,11 +129,11 @@ public class CustomerRepository : ICustomerRepository
     private Customer UpdateCache(string id, Customer c)
     {
         Customer? old;
-        if (customerCache is not null)
+        if (customersCache is not null)
         {
-            if (customerCache.TryGetValue(id, out old))
+            if (customersCache.TryGetValue(id, out old))
             {
-                if (customerCache.TryUpdate(id, c, old))
+                if (customersCache.TryUpdate(id, c, old))
                 {
                     return c;
                 }

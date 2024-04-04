@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Packt.Shared;
+using Nothwind.WebApi.Repositories;
 using static System.Console;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers(options =>
 {
     WriteLine("Стандартные форматы отображения:");
@@ -29,6 +29,7 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddNorthWindContext(); // контекст Northwind Db
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>(); // зависимость с ограниченной областью действия
 
 var app = builder.Build();
 
