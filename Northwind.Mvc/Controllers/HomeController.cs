@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Northwind.Mvc.Models;
 using Packt.Shared; // NortwindContext
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace Northwind.Mvc.Controllers
 {
@@ -11,11 +12,13 @@ namespace Northwind.Mvc.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly NorthwindContext _db;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public HomeController(ILogger<HomeController> logger, NorthwindContext db)
+        public HomeController(ILogger<HomeController> logger, NorthwindContext db, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             _db = db;
+            _clientFactory = httpClientFactory;
         }
 
         [ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any)]
@@ -110,5 +113,35 @@ namespace Northwind.Mvc.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// ѕолучить информацию о клиентах в определЄнной стране через Web.Api
+        /// </summary>
+        /// <param name="country"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Customers(string country)
+        {
+            string uri;
+            if (string.IsNullOrEmpty(country))
+            {
+                ViewData["Title"] = "ѕокупатели со всего белого света";
+                uri = "api/customers";
+            }
+            else
+            {
+                ViewData["Title"] = $"ѕокупатели в {country}";
+                uri = $"api/customers/?country={country}";
+            }
+            // правильно инициализируем клиент через http - фабрику
+            HttpClient client = _clientFactory.CreateClient(name: "Northwind.WebApi");
+            // создали запрос
+            HttpRequestMessage request = new(
+                method: HttpMethod.Get,
+                requestUri: uri);
+            // получаем ответ
+            HttpResponseMessage response = await client.SendAsync(request);
+            // запарсили json - ответ в модель
+            IEnumerable<Customer>? model = await response.Content.ReadFromJsonAsync<IEnumerable<Customer>>();
+            return View(model);
+        }
     }
 }

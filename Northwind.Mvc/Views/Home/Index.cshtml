@@ -79,6 +79,11 @@
         <p class="lead">
             У нас было @Model?.VisitorCount посетителей в этом месяце.
         </p>
+        <h3>Запрос покупателей из службы</h3>
+        <form asp-action="Customers" method="get">
+            <input name="country" placeholder="Введите страну" />
+            <input type="submit" />
+        </form>
         <h3>Запрос продуктов по цене</h3>
         <form asp-action="ProductsThatCostsMoreThan" asp-controller="Home" method="get">
             <input name="price" placeholder="Продукты дороже чем..." />
